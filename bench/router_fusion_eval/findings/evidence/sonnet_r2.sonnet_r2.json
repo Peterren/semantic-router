@@ -1,0 +1,45 @@
+{
+    "total_instances": 8,
+    "submitted_instances": 8,
+    "completed_instances": 8,
+    "resolved_instances": 1,
+    "unresolved_instances": 7,
+    "empty_patch_instances": 0,
+    "error_instances": 0,
+    "completed_ids": [
+        "mwaskom__seaborn-3187",
+        "psf__requests-2931",
+        "pylint-dev__pylint-4551",
+        "pylint-dev__pylint-4604",
+        "pylint-dev__pylint-4661",
+        "pylint-dev__pylint-4970",
+        "pylint-dev__pylint-6386",
+        "pylint-dev__pylint-7080"
+    ],
+    "incomplete_ids": [],
+    "empty_patch_ids": [],
+    "submitted_ids": [
+        "mwaskom__seaborn-3187",
+        "psf__requests-2931",
+        "pylint-dev__pylint-4551",
+        "pylint-dev__pylint-4604",
+        "pylint-dev__pylint-4661",
+        "pylint-dev__pylint-4970",
+        "pylint-dev__pylint-6386",
+        "pylint-dev__pylint-7080"
+    ],
+    "resolved_ids": [
+        "pylint-dev__pylint-4970"
+    ],
+    "unresolved_ids": [
+        "mwaskom__seaborn-3187",
+        "psf__requests-2931",
+        "pylint-dev__pylint-4551",
+        "pylint-dev__pylint-4604",
+        "pylint-dev__pylint-4661",
+        "pylint-dev__pylint-6386",
+        "pylint-dev__pylint-7080"
+    ],
+    "error_ids": [],
+    "schema_version": 2
+}

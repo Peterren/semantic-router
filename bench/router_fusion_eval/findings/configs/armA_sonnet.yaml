@@ -1,0 +1,14 @@
+agent:
+  step_limit: 60
+  cost_limit: 0.0
+model:
+  model_name: "claude-sonnet-4-5"
+  model_kwargs:
+    max_tokens: 4096
+    timeout: 180
+    num_retries: 5
+environment:
+  environment_class: docker
+  cwd: "/testbed"
+  timeout: 120
+  env: {PAGER: cat, MANPAGER: cat, LESS: -R, PIP_PROGRESS_BAR: "off", TQDM_DISABLE: "1", BASH_ENV: /root/.bashrc}

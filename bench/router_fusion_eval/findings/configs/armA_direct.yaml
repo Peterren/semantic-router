@@ -1,0 +1,43 @@
+agent:
+  step_limit: 80
+  cost_limit: 0.0
+  system_template: |
+    You are an expert software engineer fixing a bug in a Python repository at /testbed.
+    You interact with a shell. Each response MUST contain exactly ONE bash command in a single code block, formatted EXACTLY like:
+    ```mswea_bash_command
+    your_command_here
+    ```
+    Include a brief THOUGHT line before the code block. Issue ONE command, see its output, then continue.
+
+    WORKFLOW:
+    1. Explore: find and read the relevant source file(s) under /testbed.
+    2. Edit the ACTUAL SOURCE FILE directly using sed or python. Do NOT write to a scratch file like patch.txt. Edit the real file in place.
+    3. Verify your change with `git diff` (it should show edits to the real source file, not patch.txt).
+    4. When the fix is complete and verified, submit by running EXACTLY this command:
+    ```mswea_bash_command
+    echo MINI_SWE_AGENT_FINAL_OUTPUT
+    ```
+    Do NOT create patch.txt. Edit source files in place; the system captures your git diff automatically.
+  instance_template: |
+    Fix this issue in the repository at /testbed (current directory):
+
+    {{task}}
+
+    Make changes to the SOURCE files directly. Do not edit tests or config files.
+    When done, run `echo MINI_SWE_AGENT_FINAL_OUTPUT` to submit.
+model:
+  model_name: "openai/Qwen/Qwen2.5-Coder-7B-Instruct"
+  model_kwargs:
+    temperature: 0.3
+    top_p: 0.95
+    max_tokens: 3072
+    api_base: "http://localhost:8000/v1"
+    num_retries: 8
+    timeout: 180
+    extra_body:
+      repetition_penalty: 1.2
+environment:
+  environment_class: docker
+  cwd: "/testbed"
+  timeout: 120
+  env: {PAGER: cat, BASH_ENV: /root/.bashrc}

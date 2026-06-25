@@ -1,0 +1,5 @@
+# Raw run artifacts embed local paths / large trajectory dumps — never commit.
+# The curated, sanitized evidence lives in results/ (small JSON reports + writeups).
+DESIGN.v1.md
+__pycache__/
+*.pyc
