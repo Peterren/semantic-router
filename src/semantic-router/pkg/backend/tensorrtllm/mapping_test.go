@@ -135,10 +135,12 @@ func TestCounterDeltaLatencyAcrossScrapes(t *testing.T) {
 	families := parseFixture(t, trtLLMBaselineMetrics)
 	// prev snapshot: 1.0s total over 50 reqs earlier.
 	prev := counterSnapshot{
-		requestDurationUs: 1000000,
-		queueDurationUs:   250000,
-		requestCount:      50,
-		valid:             true,
+		requestDurationUs:  1000000,
+		queueDurationUs:    250000,
+		requestCount:       50,
+		hasRequestDuration: true,
+		hasQueueDuration:   true,
+		hasRequestCount:    true,
 	}
 	sample, _, _ := normalizeTarget(testTarget(), families, prev, 5*time.Second, time.Unix(1000, 0))
 	// delta request dur = 2000000-1000000 = 1e6 us over 100-50=50 reqs -> 20000us = 0.02s
