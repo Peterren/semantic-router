@@ -48,10 +48,12 @@ const (
 // latency across two consecutive scrapes (Triton core exposes counters, not
 // histograms, by default).
 type counterSnapshot struct {
-	requestDurationUs float64
-	queueDurationUs   float64
-	requestCount      float64
-	valid             bool
+	requestDurationUs  float64
+	queueDurationUs    float64
+	requestCount       float64
+	hasRequestDuration bool
+	hasQueueDuration   bool
+	hasRequestCount    bool
 }
 
 // normalizeTarget converts one scraped Triton/TRT-LLM metrics document into a
@@ -87,7 +89,7 @@ func normalizeTarget(
 
 	// Latency, highest available fidelity tier (see design 4.1).
 	snapshot := applyLatency(&t, families, prev)
-	if snapshot.valid {
+	if snapshot.hasRequestDuration || snapshot.hasQueueDuration || snapshot.hasRequestCount {
 		sig.any = true
 	}
 
@@ -210,9 +212,15 @@ func applyLatency(t *backend.BackendTelemetry, families map[string]*dto.MetricFa
 	// Tier 1: always-on counter averages (E2E/queue). Only fills percentile-less
 	// average into P50 as a coarse central estimate when no richer tier set it.
 	current := readCounters(families)
-	if current.valid && prev.valid {
-		fillAverageIfEmpty(&t.Latency.E2ESeconds, current.requestDurationUs, prev.requestDurationUs, current.requestCount, prev.requestCount)
-		fillAverageIfEmpty(&t.Latency.QueueSeconds, current.queueDurationUs, prev.queueDurationUs, current.requestCount, prev.requestCount)
+	// Each delta needs its own duration and the request count in both scrapes.
+	// An absent counter is not an observed zero (including after it reappears).
+	if current.hasRequestCount && prev.hasRequestCount {
+		if current.hasRequestDuration && prev.hasRequestDuration {
+			fillAverageIfEmpty(&t.Latency.E2ESeconds, current.requestDurationUs, prev.requestDurationUs, current.requestCount, prev.requestCount)
+		}
+		if current.hasQueueDuration && prev.hasQueueDuration {
+			fillAverageIfEmpty(&t.Latency.QueueSeconds, current.queueDurationUs, prev.queueDurationUs, current.requestCount, prev.requestCount)
+		}
 	}
 	return current
 }
@@ -341,15 +349,15 @@ func readCounters(families map[string]*dto.MetricFamily) counterSnapshot {
 	snap := counterSnapshot{}
 	if v, ok := sumCounter(families, MetricRequestDurationUs); ok {
 		snap.requestDurationUs = v
-		snap.valid = true
+		snap.hasRequestDuration = true
 	}
 	if v, ok := sumCounter(families, MetricQueueDurationUs); ok {
 		snap.queueDurationUs = v
-		snap.valid = true
+		snap.hasQueueDuration = true
 	}
 	if v, ok := sumCounter(families, MetricRequestSuccess); ok {
 		snap.requestCount = v
-		snap.valid = true
+		snap.hasRequestCount = true
 	}
 	return snap
 }

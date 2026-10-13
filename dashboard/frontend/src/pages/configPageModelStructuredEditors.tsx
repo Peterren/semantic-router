@@ -19,6 +19,8 @@ const backendRefFields: ObjectEditorField<BackendRefEntry>[] = [
   { key: 'engine_kind', label: 'Engine kind', placeholder: 'trtllm' },
   { key: 'type', label: 'Backend type', placeholder: 'chat' },
   { key: 'endpoint', label: 'Endpoint', placeholder: '127.0.0.1:8000', fullWidth: true },
+  { key: 'metrics_port', label: 'Metrics port', type: 'number', min: 0, max: 65535, step: 1, placeholder: '8002' },
+  { key: 'metrics_path', label: 'Metrics path', placeholder: '/metrics', fullWidth: true },
   {
     key: 'base_url',
     label: 'Base URL',

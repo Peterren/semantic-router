@@ -139,6 +139,8 @@ export interface BackendRefEntry {
   backend_id?: string
   engine_kind?: string
   endpoint?: string
+  metrics_port?: number
+  metrics_path?: string
   protocol?: 'http' | 'https'
   weight?: number
   type?: string

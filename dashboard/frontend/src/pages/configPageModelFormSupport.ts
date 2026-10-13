@@ -30,6 +30,8 @@ export function normalizeModelBackendRefs(value: unknown): BackendRefEntry[] {
       if (typeof entry.backend_id === 'string' && entry.backend_id.trim()) normalized.backend_id = entry.backend_id.trim()
       if (typeof entry.engine_kind === 'string' && entry.engine_kind.trim()) normalized.engine_kind = entry.engine_kind.trim()
       if (typeof entry.endpoint === 'string' && entry.endpoint.trim()) normalized.endpoint = entry.endpoint.trim()
+      if (typeof entry.metrics_port === 'number' && Number.isFinite(entry.metrics_port)) normalized.metrics_port = entry.metrics_port
+      if (typeof entry.metrics_path === 'string' && entry.metrics_path.trim()) normalized.metrics_path = entry.metrics_path.trim()
       if (entry.protocol === 'https') normalized.protocol = 'https'
       else if (entry.protocol === 'http') normalized.protocol = 'http'
       if (typeof entry.weight === 'number' && Number.isFinite(entry.weight)) normalized.weight = entry.weight
