@@ -1,0 +1,57 @@
+name: Vela 3.1 deployment qualification
+
+on:
+  push:
+    branches: [validation/vela31-e2e-6310]
+
+permissions:
+  contents: read
+  actions: read
+  issues: read
+  pull-requests: read
+
+jobs:
+  plan:
+    uses: ./.github/workflows/ci-changes.yml
+    with:
+      profile: pr
+      verification: e2e.model-runtime
+      publish: false
+  image-router:
+    needs: plan
+    uses: ./.github/workflows/build-artifacts.yml
+    with:
+      images: ${{ toJSON(fromJSON(needs.plan.outputs.image_producers)['image-router'].build_images) }}
+      published-images: ${{ toJSON(fromJSON(needs.plan.outputs.image_producers)['image-router'].published_images) }}
+      mode: pr
+      multiarch: false
+  image-fixtures:
+    needs: plan
+    uses: ./.github/workflows/build-artifacts.yml
+    with:
+      images: ${{ toJSON(fromJSON(needs.plan.outputs.image_producers)['image-fixtures'].build_images) }}
+      published-images: ${{ toJSON(fromJSON(needs.plan.outputs.image_producers)['image-fixtures'].published_images) }}
+      mode: pr
+      multiarch: false
+  e2e-router:
+    needs: [plan, image-router]
+    if: ${{ !cancelled() && needs.plan.result == 'success' && needs.image-router.result == 'success' && needs.plan.outputs.e2e-router != '[]' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        label: ${{ fromJSON(needs.plan.outputs.worker_labels)['e2e-router'] }}
+    uses: ./.github/workflows/integration-test-k8s.yml
+    with:
+      batch: ${{ toJSON(fromJSON(needs.plan.outputs.dispatch)['e2e-router'][matrix.label]) }}
+      prebuilt-images: true
+  e2e-fixtures:
+    needs: [plan, image-router, image-fixtures]
+    if: ${{ !cancelled() && needs.plan.result == 'success' && needs.image-router.result == 'success' && needs.image-fixtures.result == 'success' && needs.plan.outputs.e2e-fixtures != '[]' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        label: ${{ fromJSON(needs.plan.outputs.worker_labels)['e2e-fixtures'] }}
+    uses: ./.github/workflows/integration-test-k8s.yml
+    with:
+      batch: ${{ toJSON(fromJSON(needs.plan.outputs.dispatch)['e2e-fixtures'][matrix.label]) }}
+      prebuilt-images: true
