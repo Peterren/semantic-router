@@ -52,9 +52,11 @@ config:
             question:
               type: noul
               instructions: Does this request need urgent action?
-              criteria:
-                "false": can wait
-                "true": needs immediate action
+              choices:
+                - key: "false"
+                  description: can wait
+                - key: "true"
+                  description: needs immediate action
             predicate:
               gte: 0.0001
             timeout_ms: 10000

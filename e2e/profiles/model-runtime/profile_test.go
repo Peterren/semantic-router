@@ -205,7 +205,10 @@ func TestProfileKeepsVela31DescribedNoulOnAMarkerSpecificRoute(t *testing.T) {
 		foundSignal = true
 		want := map[string]interface{}{
 			"type": "noul", "instructions": "Does this request need urgent action?",
-			"criteria": map[string]interface{}{"false": "can wait", "true": "needs immediate action"},
+			"choices": []interface{}{
+				map[string]interface{}{"key": "false", "description": "can wait"},
+				map[string]interface{}{"key": "true", "description": "needs immediate action"},
+			},
 		}
 		if signal.Deployment != "vela31-fixture" || !reflect.DeepEqual(signal.Question, want) ||
 			!reflect.DeepEqual(signal.Predicate, map[string]float64{"gte": 0.0001}) {
